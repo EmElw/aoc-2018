@@ -23,19 +23,21 @@ units :: String -> String
 units s = nub $ map toLower s
 
 reaction :: String -> String
-reaction input = 
-    if result == input
-    then result
-    else reaction result
-    where result = passOver input
+reaction s = reaction' s []
 
-passOver :: String -> String
-passOver (a:b:xs) =
-    if a `reactsWith` b
-    then passOver xs
-    else a : passOver (b : xs)  
-passOver [a] = [a]
-passOver [] = []
+reaction' :: String -> String -> String
+reaction' []    prev    = prev
+reaction' [a]   prev    = prev ++ [a]
+reaction' (a:b:xs)  []    
+    | a `reactsWith ` b = reaction' xs      []
+    | otherwise         = reaction' (b:xs)  [a]
+reaction' (a:b:xs)  prev    
+    | a `reactsWith ` b = reaction' (y:xs)  ys
+    | otherwise         = reaction' (b:xs)  (prev ++ [a])
+    where
+        y   = last prev
+        ys  = init prev
+
 
 reactsWith :: Char -> Char -> Bool
 reactsWith a b
